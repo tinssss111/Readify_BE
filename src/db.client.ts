@@ -1,12 +1,11 @@
 import { MongoClient, Db } from 'mongodb';
-import envConfig from './configs/config';
 
 let client: MongoClient | null = null;
 let db: Db | null = null;
 
 export async function connectClient() {
-  const uri = envConfig.MONGO_URI ?? envConfig.DATABASE_URL;
-  if (!uri) throw new Error('MONGO_URI or DATABASE_URL not set');
+  const uri = process.env.MONGODB_URI ?? process.env.DATABASE_URL ?? process.env.MONGO_URI;
+  if (!uri) throw new Error('MONGODB_URI or DATABASE_URL or MONGO_URI not set');
   if (!client) {
     client = new MongoClient(uri);
     await client.connect();

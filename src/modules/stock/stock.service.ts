@@ -1,5 +1,4 @@
 import { Injectable, OnModuleInit, OnModuleDestroy, Logger, NotFoundException } from '@nestjs/common';
-import envConfig from '../configs/config';
 import { MongoClient, Collection, ObjectId } from 'mongodb';
 
 @Injectable()
@@ -9,9 +8,9 @@ export class StockService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(StockService.name);
 
   async onModuleInit() {
-    const uri = envConfig.MONGO_URI ?? envConfig.DATABASE_URL;
+    const uri = process.env.MONGODB_URI ?? process.env.DATABASE_URL ?? process.env.MONGO_URI;
     if (!uri) {
-      this.logger.error('MONGO_URI or DATABASE_URL not set');
+      this.logger.error('MONGODB_URI or DATABASE_URL or MONGO_URI not set');
       return;
     }
     this.client = new MongoClient(uri);

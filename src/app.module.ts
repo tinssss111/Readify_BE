@@ -6,6 +6,8 @@ import configuration from './configs/configuration';
 import { validateEnv } from './configs/validation-env';
 import { DatabaseModule } from './shared/database/database.module';
 import { AccountsModule } from './modules/accounts/accounts.module';
+import { StockModule } from './modules/stock/stock.module';
+import { SupplierModule } from './modules/supplier/supplier.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { AccountsModule } from './modules/accounts/accounts.module';
     }),
     DatabaseModule,
     AccountsModule,
+    StockModule,
+    SupplierModule,
   ],
   controllers: [AppController],
   providers: [AppService],
