@@ -2,16 +2,7 @@
 import { BaseResponse } from './base.response';
 
 export class SuccessResponse<T> extends BaseResponse<T> {
-  constructor(
-    data: T,
-    message: string = 'Success',
-    statusCode: number = 200,
-    options?: {
-      path?: string;
-      requestId?: string;
-      version?: string;
-    },
-  ) {
-    super(true, message, data, statusCode, options);
+  constructor(data: T, message: string = 'Success', statusCode: number = 200) {
+    super(true, message, data, statusCode);
   }
 }

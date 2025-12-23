@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Account, AccountDocument } from './schemas/account.schema';
 import { RegisterAccountDto } from './dto/register-account.dto';
@@ -6,6 +6,7 @@ import { ApiResponse } from 'src/shared/responses/api-response';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
+import { ErrorResponse } from 'src/shared/responses/error.response';
 
 @Injectable()
 export class AccountsService {
@@ -21,7 +22,7 @@ export class AccountsService {
     const isEmailExists = await this.accountModel.findOne({ email });
 
     if (isEmailExists) {
-      return ApiResponse.error('Email already exists', 'EMAIL_ALREADY_EXISTS', 400, undefined, undefined);
+      throw new HttpException(ErrorResponse.validationError([{ message: 'Email already exists' }]), 400);
     }
 
     const passwordHash = await bcrypt.hash(dto.password, this.configService.get<number>('bcrypt.saltRounds') as number);
@@ -37,6 +38,6 @@ export class AccountsService {
     const savedAccount = await newAccount.save();
     const account = savedAccount.toObject();
 
-    return ApiResponse.success(account, 'Account created successfully', 201);
+    return ApiResponse.success(account, 'Account created successfully', 200);
   }
 }

@@ -24,11 +24,6 @@ export class PaginatedResponse<T> extends BaseResponse<PaginatedData<T>> {
       total: number;
     },
     message: string = 'Success',
-    options?: {
-      path?: string;
-      requestId?: string;
-      version?: string;
-    },
   ) {
     const totalPages = Math.ceil(pagination.total / pagination.limit);
     const meta: PaginationMeta = {
@@ -40,7 +35,7 @@ export class PaginatedResponse<T> extends BaseResponse<PaginatedData<T>> {
       hasPrev: pagination.page > 1,
     };
 
-    super(true, message, { items, meta }, 200, options);
+    super(true, message, { items, meta }, 200);
   }
 
   // Helper method để tạo response từ TypeORM/Mongoose query
@@ -50,12 +45,7 @@ export class PaginatedResponse<T> extends BaseResponse<PaginatedData<T>> {
     page: number,
     limit: number,
     message?: string,
-    options?: {
-      path?: string;
-      requestId?: string;
-      version?: string;
-    },
   ): PaginatedResponse<T> {
-    return new PaginatedResponse<T>(items, { page, limit, total }, message, options);
+    return new PaginatedResponse<T>(items, { page, limit, total }, message);
   }
 }
