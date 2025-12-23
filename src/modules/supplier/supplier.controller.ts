@@ -26,4 +26,10 @@ export class SupplierController {
     const created = await this.supplierService.create(dto);
     return ApiResponse.success(created, 'Supplier created', 201);
   }
+
+    @Put(':id')
+  async update(@Param('id') id: string, @Body() dto: UpdateSupplierDto) {
+    const updated = await this.supplierService.update(id, dto);
+    return ApiResponse.success(updated, 'Supplier updated');
+  }
 }
