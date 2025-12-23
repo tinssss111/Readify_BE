@@ -20,4 +20,10 @@ export class SupplierController {
     return ApiResponse.success(item);
   }
 
+
+    @Post()
+  async create(@Body() dto: CreateSupplierDto) {
+    const created = await this.supplierService.create(dto);
+    return ApiResponse.success(created, 'Supplier created', 201);
+  }
 }
