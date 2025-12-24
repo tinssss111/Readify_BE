@@ -238,4 +238,84 @@ export class StaffService {
 
     return ApiResponse.success(data, 'Tạo nhân viên thành công');
   }
+
+    // Edit Staff
+  async editStaff(id: string, dto: UpdateStaffDto) {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new HttpException(
+        ErrorResponse.validationError([{ field: 'id', message: 'Invalid staff id' }]),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const STAFF_ROLES = this.STAFF_ROLES();
+
+    const staff = await this.accountModel.findById(id);
+    if (!staff) {
+      throw new HttpException(ErrorResponse.notFound('Staff not found'), HttpStatus.NOT_FOUND);
+    }
+
+    if (!STAFF_ROLES.includes(staff.role)) {
+      throw new HttpException(ErrorResponse.notFound('Account is not staff'), HttpStatus.NOT_FOUND);
+    }
+
+    // if (staff.status === SearchStaffDto.AccountStatus.BANNED) {
+    //   throw new HttpException(ErrorResponse.forbidden('Staff is banned'), HttpStatus.FORBIDDEN);
+    // }
+
+    // role update validation
+    if (dto.role !== undefined && !STAFF_ROLES.includes(dto.role)) {
+      throw new HttpException(
+        ErrorResponse.validationError([{ field: 'role', message: 'Role is not a staff role' }]),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // email update validation
+    if (dto.email !== undefined) {
+      const email = dto.email.trim().toLowerCase();
+      const exists = await this.accountModel.exists({ email, _id: { $ne: staff._id } });
+      if (exists) {
+        throw new HttpException(
+          ErrorResponse.validationError([{ field: 'email', message: 'Email already exists' }]),
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      staff.email = email;
+    }
+
+    // password update
+    if (dto.password !== undefined) {
+      staff.password = await bcrypt.hash(dto.password, 10);
+    }
+
+    if (dto.firstName !== undefined) staff.firstName = dto.firstName.trim();
+    if (dto.lastName !== undefined) staff.lastName = dto.lastName.trim();
+    if (dto.dateOfBirth !== undefined) staff.dateOfBirth = dto.dateOfBirth;
+    if (dto.phone !== undefined) staff.phone = dto.phone;
+    if (dto.avatarUrl !== undefined) staff.avatarUrl = dto.avatarUrl;
+    if (dto.address !== undefined) staff.address = dto.address;
+    if (dto.status !== undefined) staff.status = dto.status;
+    if (dto.role !== undefined) staff.role = dto.role;
+    if (dto.sex !== undefined) staff.sex = dto.sex;
+
+    const saved = await staff.save();
+
+    const data = {
+      _id: saved._id,
+      firstName: saved.firstName,
+      lastName: saved.lastName,
+      email: saved.email,
+      phone: saved.phone,
+      address: saved.address,
+      role: saved.role,
+      status: saved.status,
+      sex: saved.sex,
+      lastLoginAt: saved.lastLoginAt,
+      createdAt: (saved as any).createdAt,
+      updatedAt: (saved as any).updatedAt,
+    };
+
+    return ApiResponse.success(data, 'Cập nhật nhân viên thành công');
+  }
 }

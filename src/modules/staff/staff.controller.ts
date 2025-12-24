@@ -23,4 +23,9 @@ export class StaffController {
   addStaff(@Body() dto: CreateStaffDto) {
     return this.staffService.addStaff(dto);
   }
+
+  @Patch(':id')
+  editStaff(@Param() params: StaffIdDto, @Body() dto: UpdateStaffDto) {
+    return this.staffService.editStaff(params.id, dto);
+  }
 }
