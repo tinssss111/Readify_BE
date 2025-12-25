@@ -1,6 +1,5 @@
 import { Controller, Get, Param, Post, UploadedFile, UseInterceptors, Res } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Response } from 'express';
 import { StockService } from './stock.service';
 import { ApiResponse } from '../../shared/responses/api-response';
 
