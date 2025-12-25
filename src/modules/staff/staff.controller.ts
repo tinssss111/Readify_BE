@@ -40,4 +40,14 @@ export class StaffController {
   restoreStaff(@Param() params: StaffIdDto) {
     return this.staffService.restoreStaff(params.id);
   }
+
+  @Patch(':id/status')
+  updateStaffStatus(@Param() params: StaffIdDto, @Body() dto: UpdateStaffStatusDto) {
+    return this.staffService.updateStaffStatus(params.id, dto);
+  }
+
+  @Patch(':id/role')
+  updateStaffRole(@Param() params: StaffIdDto, @Body() dto: UpdateStaffRoleDto) {
+    return this.staffService.updateStaffRole(params.id, dto);
+  }
 }

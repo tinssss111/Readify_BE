@@ -368,4 +368,62 @@ export class StaffService {
 
     return ApiResponse.success({ _id: id }, 'Khôi phục nhân viên thành công');
   }
+
+  async updateStaffStatus(id: string, dto: UpdateStaffStatusDto) {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new HttpException(
+        ErrorResponse.validationError([{ field: 'id', message: 'Invalid staff id' }]),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const staff = await this.accountModel.findById(id);
+    if (!staff || staff.isDeleted === true) {
+      throw new HttpException(ErrorResponse.notFound('Staff not found'), HttpStatus.NOT_FOUND);
+    }
+
+    if (!this.STAFF_ROLES.includes(staff.role)) {
+      throw new HttpException(ErrorResponse.notFound('Account is not staff'), HttpStatus.NOT_FOUND);
+    }
+
+    // Optional
+    // if (staff.status === AccountStatus.BANNED) {
+    //   throw new HttpException(ErrorResponse.forbidden('Staff is banned'), HttpStatus.FORBIDDEN);
+    // }
+
+    staff.status = dto.status;
+    await staff.save();
+
+    return ApiResponse.success({ _id: id, status: dto.status }, 'Cập nhật trạng thái nhân viên thành công');
+  }
+
+  async updateStaffRole(id: string, dto: UpdateStaffRoleDto) {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new HttpException(
+        ErrorResponse.validationError([{ field: 'id', message: 'Invalid staff id' }]),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const staff = await this.accountModel.findById(id);
+    if (!staff || staff.isDeleted === true) {
+      throw new HttpException(ErrorResponse.notFound('Staff not found'), HttpStatus.NOT_FOUND);
+    }
+
+    if (!this.STAFF_ROLES.includes(staff.role)) {
+      throw new HttpException(ErrorResponse.notFound('Account is not staff'), HttpStatus.NOT_FOUND);
+    }
+
+    if (!this.STAFF_ROLES.includes(dto.role)) {
+      throw new HttpException(
+        ErrorResponse.validationError([{ field: 'role', message: 'Role is not a staff role' }]),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    staff.role = dto.role;
+    await staff.save();
+
+    return ApiResponse.success({ _id: id, role: dto.role }, 'Cập nhật vai trò nhân viên thành công');
+  }
 }
