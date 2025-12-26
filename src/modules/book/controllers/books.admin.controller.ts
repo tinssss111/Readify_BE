@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { BooksAdminService } from '../services/books.admin.service';
 import { SearchAdminBooksDto } from '../dto/search-admin-books.dto';
 import { BookIdDto } from '../dto/book-id.dto';
 import { CreateBookDto } from '../dto/create-book.dto';
+import { UpdateBookDto } from '../dto/update-book.dto';
 
 @Controller('admin/book')
 export class BooksAdminController {
@@ -21,5 +22,10 @@ export class BooksAdminController {
   @Post()
   addBook(@Body() dto: CreateBookDto) {
     return this.booksAdminService.addBook(dto);
+  }
+
+  @Patch(':id')
+  updateBook(@Param() params: BookIdDto, @Body() dto: UpdateBookDto) {
+    return this.booksAdminService.updateBook(params.id, dto);
   }
 }
