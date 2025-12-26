@@ -9,6 +9,7 @@ import { AccountsModule } from './modules/accounts/accounts.module';
 import { StaffModule } from './modules/staff/staff.module';
 import { StockModule } from './modules/stock/stock.module';
 import { SupplierModule } from './modules/supplier/supplier.module';
+import { BookModule } from './modules/book/books.module';
 import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
@@ -23,6 +24,7 @@ import { AuthModule } from './modules/auth/auth.module';
     StaffModule,
     StockModule,
     SupplierModule,
+    BookModule,
     AuthModule,
   ],
   controllers: [AppController],

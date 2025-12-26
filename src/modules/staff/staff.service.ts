@@ -3,7 +3,7 @@ import { Injectable, BadRequestException, NotFoundException, HttpException, Http
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 
-import * as bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 
 import { AccountRole, AccountStatus, StaffSortBy, SortOrder } from './constants/staff.enum';
 
@@ -17,12 +17,15 @@ import { UpdateStaffRoleDto } from './dto/update-staff-role.dto';
 
 import { ApiResponse } from '../../shared/responses/api-response';
 import { ErrorResponse } from '../../shared/responses/error.response';
+import { ConfigService } from '@nestjs/config';
+import { hashPassword } from 'src/shared/utils/bcrypt';
 
 @Injectable()
 export class StaffService {
   private readonly STAFF_ROLES: number[] = [AccountRole.ADMIN, AccountRole.SELLER, AccountRole.WAREHOUSE];
 
   constructor(
+    private readonly configService: ConfigService,
     @InjectModel(Account.name)
     private readonly accountModel: Model<AccountDocument>,
   ) {}
@@ -154,7 +157,6 @@ export class StaffService {
       .findOne({
         _id: id,
         role: { $in: this.STAFF_ROLES },
-        status: { $ne: AccountStatus.BANNED },
       })
       .select({
         firstName: 1,
@@ -209,9 +211,9 @@ export class StaffService {
         HttpStatus.BAD_REQUEST,
       );
     }
-
+  
     // Hash password
-    const passwordHash = await bcrypt.hash(dto.password, 10);
+    const passwordHash = await hashPassword(dto.password, Number(this.configService.get<number>('bcrypt.saltRounds')));
 
     const created = await this.accountModel.create({
       firstName: dto.firstName?.trim(),
@@ -270,10 +272,6 @@ export class StaffService {
       );
     }
 
-    // if (staff.status === SearchStaffDto.AccountStatus.BANNED) {
-    //   throw new HttpException(ErrorResponse.forbidden('Staff is banned'), HttpStatus.FORBIDDEN);
-    // }
-
     // role update validation
     if (dto.role === AccountRole.ADMIN) {
       throw new HttpException(
@@ -304,7 +302,7 @@ export class StaffService {
 
     // password update
     if (dto.password !== undefined) {
-      staff.password = await bcrypt.hash(dto.password, 10);
+      staff.password = await hashPassword(dto.password, Number(this.configService.get<number>('bcrypt.saltRounds')));
     }
 
     if (dto.firstName !== undefined) staff.firstName = dto.firstName.trim();
@@ -436,11 +434,6 @@ export class StaffService {
         HttpStatus.BAD_REQUEST,
       );
     }
-
-    // Optional
-    // if (staff.status === AccountStatus.BANNED) {
-    //   throw new HttpException(ErrorResponse.forbidden('Staff is banned'), HttpStatus.FORBIDDEN);
-    // }
 
     staff.status = dto.status;
     await staff.save();
