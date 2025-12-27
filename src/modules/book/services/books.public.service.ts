@@ -230,4 +230,124 @@ export class BooksPublicService {
 
     return ApiResponse.success(book, 'Get book detail successfully');
   }
+
+  async getRelatedBooks(bookId: string, limitParam?: string) {
+    if (!Types.ObjectId.isValid(bookId)) {
+      throw new HttpException(
+        ErrorResponse.validationError([{ field: 'id', message: 'Invalid book id' }]),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const limit = Math.min(Math.max(parseInt(limitParam ?? '8', 10) || 8, 1), 20);
+
+    // 1) Load current book (để lấy categoryIds/authors)
+    const book = await this.bookModel
+      .findOne({ _id: new Types.ObjectId(bookId), isDeleted: false, status: 1 })
+      .select({ categoryIds: 1, authors: 1 })
+      .lean();
+
+    if (!book) {
+      throw new HttpException(ErrorResponse.notFound('Book not found'), HttpStatus.NOT_FOUND);
+    }
+
+    const categoryIds = (book.categoryIds ?? []).map((id: any) => new Types.ObjectId(String(id)));
+    const authors = (book.authors ?? []).map((a: any) => String(a).trim()).filter(Boolean);
+
+    // 2) Build related filter
+    const filter: Record<string, any> = {
+      _id: { $ne: new Types.ObjectId(bookId) },
+      isDeleted: false,
+      status: 1,
+    };
+
+    const or: any[] = [];
+    if (categoryIds.length > 0) or.push({ categoryIds: { $in: categoryIds } });
+    if (authors.length > 0) or.push({ authors: { $in: authors } });
+
+    // Nếu book không có categoryIds + authors, fallback: newest
+    if (or.length > 0) filter.$or = or;
+
+    // 3) Query related
+    const items = await this.bookModel
+      .find(filter)
+      .select({
+        title: 1,
+        slug: 1,
+        authors: 1,
+        thumbnailUrl: 1,
+        basePrice: 1,
+        originalPrice: 1,
+        currency: 1,
+        averageRating: 1,
+        totalReviews: 1,
+        soldCount: 1,
+        categoryIds: 1,
+        createdAt: 1,
+      })
+      // Sort đơn giản: ưu tiên bán chạy + mới
+      .sort({ soldCount: -1, createdAt: -1 })
+      .limit(limit)
+      .lean();
+
+    return ApiResponse.success({ items }, 'Get related books successfully');
+  }
+
+  async getRelatedBookBySlug(bookSlug: string, limitParam?: string) {
+    const slug = bookSlug?.trim().toLowerCase();
+    if (!slug) {
+      throw new HttpException(
+        ErrorResponse.validationError([{ field: 'slug', message: 'Slug is required' }]),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const limit = Math.min(Math.max(parseInt(limitParam ?? '8', 10) || 8, 1), 20);
+
+    const book = await this.bookModel
+      .findOne({ slug, isDeleted: false, status: 1 })
+      .select({ _id: 1, categoryIds: 1, authors: 1 })
+      .lean();
+
+    if (!book) {
+      throw new HttpException(ErrorResponse.notFound('Book not found'), HttpStatus.NOT_FOUND);
+    }
+
+    const categoryIds = (book.categoryIds ?? []).map((id: any) => new Types.ObjectId(String(id)));
+    const authors = (book.authors ?? []).map((a: any) => String(a).trim()).filter(Boolean);
+
+    const filter: Record<string, any> = {
+      _id: { $ne: book._id },
+      isDeleted: false,
+      status: 1,
+    };
+
+    const or: any[] = [];
+    if (categoryIds.length) or.push({ categoryIds: { $in: categoryIds } });
+    if (authors.length) or.push({ authors: { $in: authors } });
+
+    if (or.length) filter.$or = or;
+
+    const items = await this.bookModel
+      .find(filter)
+      .select({
+        title: 1,
+        slug: 1,
+        authors: 1,
+        thumbnailUrl: 1,
+        basePrice: 1,
+        originalPrice: 1,
+        currency: 1,
+        averageRating: 1,
+        totalReviews: 1,
+        soldCount: 1,
+        categoryIds: 1,
+        createdAt: 1,
+      })
+      .sort({ soldCount: -1, createdAt: -1 })
+      .limit(limit)
+      .lean();
+
+    return ApiResponse.success({ items }, 'Get related books successfully');
+  }
 }

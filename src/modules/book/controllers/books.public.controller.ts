@@ -28,4 +28,14 @@ export class BooksPublicController {
   getBookDetailById(@Param() params: BookIdDto) {
     return this.booksPublicService.getBookDetailById(params.id);
   }
+
+  @Get(':id/related')
+  getRelatedBooks(@Param() params: BookIdDto, @Query('limit') limit?: string) {
+    return this.booksPublicService.getRelatedBooks(params.id, limit);
+  }
+
+  @Get('slug/:slug/related')
+  getRelatedBookBySlug(@Param() params: BookSlugDto, @Query('limit') limit?: string) {
+    return this.booksPublicService.getRelatedBookBySlug(params.slug, limit);
+  }
 }
