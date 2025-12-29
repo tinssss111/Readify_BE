@@ -13,6 +13,7 @@ import { BookModule } from './modules/book/books.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { MediaModule } from './modules/media/media.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { UploadsModule } from './modules/uploads/uploads.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     BookModule,
     AuthModule,
     MediaModule
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
