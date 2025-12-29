@@ -11,6 +11,7 @@ import { StockModule } from './modules/stock/stock.module';
 import { SupplierModule } from './modules/supplier/supplier.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PromotionModule } from './modules/promotion/promotion.module';
+import { OrderModule } from './modules/order/order.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PromotionModule } from './modules/promotion/promotion.module';
     SupplierModule,
     AuthModule,
     PromotionModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],
