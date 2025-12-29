@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { RegisterAccountDto } from './dto/register-account.dto';
 import { AccountsService } from './accounts.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('accounts')
 export class AccountsController {
@@ -16,5 +17,11 @@ export class AccountsController {
   @UseGuards(JwtAuthGuard)
   getMe(@Req() req: any) {
     return this.accountsService.me(req?.user?.userId as string);
+  }
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return this.accountsService.uploadFile(file);
   }
 }

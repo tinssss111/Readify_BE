@@ -61,4 +61,8 @@ export class AccountsService {
 
     return ApiResponse.success(account, 'Account fetched successfully', 200);
   }
+
+  async uploadFile(file: Express.Multer.File) {
+    console.log(file);
+  }
 }
