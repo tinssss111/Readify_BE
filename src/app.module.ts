@@ -11,6 +11,7 @@ import { StockModule } from './modules/stock/stock.module';
 import { SupplierModule } from './modules/supplier/supplier.module';
 import { BookModule } from './modules/book/books.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CartModule } from './modules/cart/cart.module';
 import { MediaModule } from './modules/media/media.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { UploadsModule } from './modules/uploads/uploads.module';
@@ -30,7 +31,8 @@ import { UploadsModule } from './modules/uploads/uploads.module';
     SupplierModule,
     BookModule,
     AuthModule,
-    MediaModule,
+    CartModule,
+    MediaModule
     UploadsModule,
   ],
   controllers: [AppController],
