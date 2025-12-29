@@ -47,18 +47,22 @@ export class AccountsService {
     });
 
     const savedAccount = await newAccount.save();
-    const account = savedAccount.toObject();
+    const { password, ...account } = savedAccount.toObject();
 
     return ApiResponse.success(account, 'Account created successfully', 200);
   }
 
   async me(userId: string) {
-    const account = await this.accountModel.findById(userId);
+    const account = await this.accountModel.findById(userId).select({ password: 0 }).lean();
 
     if (!account) {
       throw new HttpException(ApiResponse.error('Account not found', 'ACCOUNT_NOT_FOUND', 404), 404);
     }
 
     return ApiResponse.success(account, 'Account fetched successfully', 200);
+  }
+
+  async uploadFile(file: Express.Multer.File) {
+    console.log(file);
   }
 }

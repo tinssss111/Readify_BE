@@ -9,8 +9,12 @@ import { AccountsModule } from './modules/accounts/accounts.module';
 import { StaffModule } from './modules/staff/staff.module';
 import { StockModule } from './modules/stock/stock.module';
 import { SupplierModule } from './modules/supplier/supplier.module';
+import { BookModule } from './modules/book/books.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CartModule } from './modules/cart/cart.module';
+import { MediaModule } from './modules/media/media.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { UploadsModule } from './modules/uploads/uploads.module';
 
 @Module({
   imports: [
@@ -19,13 +23,17 @@ import { CartModule } from './modules/cart/cart.module';
       load: [configuration],
       validationSchema: validateEnv,
     }),
+    ScheduleModule.forRoot(),
     DatabaseModule,
     AccountsModule,
     StaffModule,
     StockModule,
     SupplierModule,
+    BookModule,
     AuthModule,
     CartModule,
+    MediaModule
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
