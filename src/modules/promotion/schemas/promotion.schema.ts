@@ -41,11 +41,8 @@ export class Promotion {
   @Prop({ default: 'ACTIVE', enum: ['ACTIVE', 'INACTIVE', 'EXPIRED'] })
   status: string;
 
-  @Prop({ default: 'ORDER', enum: ['ORDER', 'PRODUCT', 'CATEGORY'] })
+  @Prop({ default: 'ORDER', enum: ['ORDER'] })
   applyScope: string;
-
-  @Prop({ type: [Types.ObjectId], default: [] })
-  applyScopeIds?: Types.ObjectId[];
 
   @Prop({ type: Types.ObjectId, ref: 'Account' })
   createdBy: Types.ObjectId;

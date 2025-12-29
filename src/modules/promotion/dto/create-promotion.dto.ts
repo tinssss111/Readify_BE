@@ -1,7 +1,7 @@
-import { IsString, IsEnum, IsNumber, IsDate, IsOptional, Min, MinLength, MaxLength, IsArray } from 'class-validator';
+import { IsString, IsEnum, IsNumber, IsDate, IsOptional, Min, MinLength, MaxLength } from 'class-validator';
 import { Type } from 'class-transformer';
-import { DiscountType, ApplyScope } from '../constants/promotion.enum';
-import type { DiscountTypeValue, ApplyScopeValue } from '../constants/promotion.enum';
+import { DiscountType } from '../constants/promotion.enum';
+import type { DiscountTypeValue } from '../constants/promotion.enum';
 
 export class CreatePromotionDto {
   @IsString()
@@ -52,13 +52,4 @@ export class CreatePromotionDto {
   @IsNumber()
   @Min(1)
   usageLimit?: number;
-
-  @IsOptional()
-  @IsEnum(ApplyScope)
-  applyScope?: ApplyScopeValue;
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  applyScopeIds?: string[];
 }
