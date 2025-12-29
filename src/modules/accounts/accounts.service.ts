@@ -12,6 +12,7 @@ import { CreateAccountDto } from './dto/create-account.dto';
 import { AccountRole, AccountStatus, SortOrder, StaffSortBy } from '../staff/constants/staff.enum';
 import { UpdateAccountDto } from './dto/edit-account.dto';
 import { SearchStaffDto } from '../staff/dto/search-staff.dto';
+import { SearchAccountDto } from './dto/search-account.dto';
 
 @Injectable()
 export class AccountsService {
@@ -183,11 +184,10 @@ export class AccountsService {
     return ApiResponse.success(account, 'Get account detail successfully', 200);
   }
 
-  async getAccountList(query: SearchStaffDto) {
+  async getAccountList(query: SearchAccountDto) {
     const {
       q,
       status,
-      role,
       isDeleted,
       sortBy = StaffSortBy.CREATED_AT,
       order = SortOrder.DESC,
