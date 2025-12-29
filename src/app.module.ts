@@ -30,7 +30,7 @@ import { UploadsModule } from './modules/uploads/uploads.module';
     SupplierModule,
     BookModule,
     AuthModule,
-    MediaModule
+    MediaModule,
     UploadsModule,
   ],
   controllers: [AppController],

@@ -55,29 +55,6 @@ export class MediaService {
     };
   }
 
-  async attach(dto: AttachMediaDto, userId?: string) {
-    const media = await this.mediaModel.findById(dto.mediaId);
-    if (!media) throw new NotFoundException('Media not found');
-
-    // ownership check
-    if (userId && media.uploadedBy && String(media.uploadedBy) !== userId) {
-      throw new ForbiddenException('You do not own this media');
-    }
-
-    if (media.status === MediaStatus.ATTACHED) {
-      throw new BadRequestException('Media already attached');
-    }
-
-    media.status = MediaStatus.ATTACHED;
-    media.attachedTo = {
-      model: dto.model,
-      id: new Types.ObjectId(dto.id),
-    };
-
-    await media.save();
-    return { success: true };
-  }
-
   async remove(mediaId: string, userId?: string) {
     const media = await this.mediaModel.findById(mediaId);
     if (!media) throw new NotFoundException('Media not found');
@@ -94,32 +71,6 @@ export class MediaService {
     return { success: true };
   }
 
-  async listMine(userId: string, q: ListMyMediaDto) {
-    const page = q.page ?? 1;
-    const limit = Math.min(q.limit ?? 20, 100);
-    const skip = (page - 1) * limit;
-
-    const filter: any = { uploadedBy: new Types.ObjectId(userId) };
-    if (q.status) filter.status = q.status;
-    if (q.type) filter.type = q.type;
-    if (q.attachedModel) filter['attachedTo.model'] = q.attachedModel;
-
-    const [items, total] = await Promise.all([
-      this.mediaModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
-      this.mediaModel.countDocuments(filter),
-    ]);
-
-    return {
-      items,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
-  }
-
   // Used by cron cleanup
   async cleanupTempOlderThan(hours: number) {
     const cutoff = new Date(Date.now() - hours * 60 * 60 * 1000);
@@ -134,7 +85,7 @@ export class MediaService {
       try {
         await this.cloudinaryService.destroy(t.publicId);
       } catch {
-        // ignore
+        console.log('error');
       }
     }
 
