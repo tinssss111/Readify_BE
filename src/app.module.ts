@@ -15,6 +15,8 @@ import { CartModule } from './modules/cart/cart.module';
 import { MediaModule } from './modules/media/media.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { UploadsModule } from './modules/uploads/uploads.module';
+import { MailModule } from './modules/mail/mail.module';
+import { OtpModule } from './modules/otp/otp.module';
 
 @Module({
   imports: [
@@ -32,8 +34,10 @@ import { UploadsModule } from './modules/uploads/uploads.module';
     BookModule,
     AuthModule,
     CartModule,
-    MediaModule
+    MediaModule,
     UploadsModule,
+    MailModule,
+    OtpModule,
   ],
   controllers: [AppController],
   providers: [AppService],
